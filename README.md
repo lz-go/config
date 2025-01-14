@@ -101,7 +101,7 @@ func TestMyFunction(t *testing.T) {
 	viper.Set("app.env", "test")
 	viper.Set("http.port", 9000)
 	
-	// Call your function that uses the configuration
+    // Call your function that uses the configuration
     // ... make assertions based on expected behavior with test configuration
 }
 ```
@@ -113,7 +113,5 @@ The config.Load() function will log an error if the .env file loading fails, but
 ## Best Practices
 
 * **Structured Keys:** Use a dot-separated notation for hierarchical configuration keys (e.g., app.env, http.port).
-
 * **Clear Documentation:** Document your configuration options in the config.yaml file with comments.
-
 * **Environment-Specific Settings:** Use environment variables to manage settings that vary between environments (e.g., database credentials, API keys).
