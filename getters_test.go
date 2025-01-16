@@ -9,6 +9,21 @@ import (
 )
 
 func TestGetters(t *testing.T) {
+	t.Run("AllSettings", func(t *testing.T) {
+		viper.Reset()
+		viper.Set("app.env", "local")
+
+		expected := map[string]interface{}{
+			"app": map[string]interface{}{
+				"env": "local",
+			},
+		}
+
+		actual := AllSettings()
+
+		assert.Equal(t, expected, actual)
+	})
+
 	t.Run("GetString", func(t *testing.T) {
 		viper.Reset()
 		viper.Set("app.env", "local")

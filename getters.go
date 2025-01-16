@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+// AllSettings merges all settings and returns them as a map[string]any.
+// It is a wrapper around viper.AllSettings.
+var AllSettings = viper.AllSettings
+
 // GetString retrieves a string value from Viper using the given key.
 // It is a wrapper around viper.GetString.
 var GetString = viper.GetString
