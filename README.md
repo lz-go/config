@@ -42,15 +42,15 @@ package main
 
 import (
 	"log"
-	
+
 	"github.com/lz-go/config"
 )
 
 func main() {
 	if err := config.Load(); err != nil {
 		log.Fatal(err)
-    }
-	
+	}
+
 	// ... rest of your application
 }
 ```
