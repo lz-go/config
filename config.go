@@ -1,8 +1,8 @@
 package config
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,53 +11,59 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Load() {
-	path := lookupConfigPath()
-
-	if err := godotenv.Load(fmt.Sprintf("%s/.env", path)); err != nil {
-		log.Printf("godotenv.Load returns error: %s\n", err.Error())
+func Load() error {
+	path, err := lookupConfigPath()
+	if err != nil {
+		return err
 	}
+
+	_ = godotenv.Load(fmt.Sprintf("%s/.env", path))
 
 	viper.AddConfigPath(path)
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("viper.ReadInConfig returns error: %s\n", err.Error())
+		return err
 	}
 
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	return nil
 }
 
-func lookupConfigPath() string {
-	pathHasConfigFile := func(path string) bool {
+func lookupConfigPath() (string, error) {
+	pathHasConfigFile := func(path string) (bool, error) {
 		filePath := filepath.Join(path, "config.yaml")
 
 		_, err := os.Stat(filePath)
 		if err == nil {
-			return true
-		} else if os.IsNotExist(err) {
-			return false
+			return true, nil
+		} else if errors.Is(err, os.ErrNotExist) {
+			return false, nil
 		} else {
-			log.Fatalf("os.Stat returns error: %s (%s)", err.Error(), filePath)
-			return false
+			return false, err
 		}
 	}
 
 	currentPath, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("os.Getwd returns error: %s (%s)", err.Error(), currentPath)
+		return "", err
 	}
 
 	for {
-		if pathHasConfigFile(currentPath) {
-			return currentPath
+		existed, err := pathHasConfigFile(currentPath)
+		if err != nil {
+			return "", err
+		}
+		if existed {
+			return currentPath, nil
 		}
 
 		parentPath := filepath.Dir(currentPath)
-		if parentPath == currentPath {
-			return currentPath
+		if parentPath == "/" || parentPath == "." {
+			return currentPath, nil
 		}
 
 		currentPath = parentPath

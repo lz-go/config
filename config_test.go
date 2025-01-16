@@ -7,7 +7,6 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	assert.NotPanics(t, func() {
-		Load()
-	})
+	err := Load()
+	assert.Nil(t, err)
 }
